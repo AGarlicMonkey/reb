@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define BUFFER_SIZE 256
+
 FILE* openOrExit(const char* fileName, const char* mode) {
 	FILE* file = fopen(fileName, mode);
 	if(file == NULL) {
@@ -22,17 +24,15 @@ int main(int argc, char** argv) {
 
 	FILE* resource = openOrExit(argv[2], openType);
 
-    size_t const bufferSize = 256;
-
-    char fileName[bufferSize];
+    char fileName[BUFFER_SIZE];
     snprintf(fileName, sizeof(fileName), "%s.c", name); //NOLINT
 
 	FILE* out = openOrExit(fileName, "w");
 	fprintf(out, "#include <stdlib.h>\n\n");
 	fprintf(out, "const unsigned char %s[] = {\n", name);
 
-	unsigned char buf[bufferSize];
-	size_t nread = 0;
+    unsigned char buf[BUFFER_SIZE];
+    size_t nread = 0;
 	size_t lineCount = 0;
     size_t const lineSize = 8;
     do {
