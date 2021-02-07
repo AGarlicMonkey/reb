@@ -22,18 +22,21 @@ int main(int argc, char** argv) {
 
 	FILE* resource = openOrExit(argv[2], openType);
 
-	char fileName[256];
-	snprintf(fileName, sizeof(fileName), "%s.c", name);
+    size_t const bufferSize = 256;
+
+    char fileName[bufferSize];
+    snprintf(fileName, sizeof(fileName), "%s.c", name); //NOLINT
 
 	FILE* out = openOrExit(fileName, "w");
 	fprintf(out, "#include <stdlib.h>\n\n");
 	fprintf(out, "const unsigned char %s[] = {\n", name);
 
-	unsigned char buf[256];
+	unsigned char buf[bufferSize];
 	size_t nread = 0;
 	size_t lineCount = 0;
-	do {
-		nread = fread(buf, 1, sizeof(buf), resource);
+    size_t const lineSize = 8;
+    do {
+        nread = fread(buf, 1, sizeof(buf), resource);
 		for(size_t i = 0; i < nread; ++i) {
 			if(lineCount == 0) {
 				fprintf(out, "\t");
@@ -41,14 +44,14 @@ int main(int argc, char** argv) {
 
 			fprintf(out, "0x%02X, ", buf[i]);
 			
-			if(++lineCount == 8) {
+			if(++lineCount == lineSize) {
 				fprintf(out, "\n");
 				lineCount = 0;
 			}
 		}
-	} while(nread > 0);
+    } while(nread > 0);
 
-	if(lineCount > 0) {
+    if(lineCount > 0) {
 		fprintf(out, "\n");
 	}
 	fprintf(out, "};\n\n");
